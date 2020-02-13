@@ -1,0 +1,229 @@
+/*
+Задание 1
+*/
+
+
+
+package com.gmail.docfordja;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.util.Date;
+import java.util.Scanner;
+
+public class Cat {
+	private Date date = new Date();
+	private String name;
+	private int age;
+	private double weight;
+	private boolean gender;
+	private String color;
+	private long eatSize = date.getTime();
+	private long sleepSize = date.getTime();
+	private File file;
+	private File sleep;
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public int getAge() {
+		return age;
+	}
+
+	public void setAge(int age) {
+		this.age = age;
+	}
+
+	public double getWeight() {
+		return weight;
+	}
+
+	public void setWeight(double weight) {
+		this.weight = weight;
+	}
+
+	public boolean isGender() {
+		return gender;
+	}
+
+	public void setGender(boolean gender) {
+		this.gender = gender;
+	}
+
+	public String getColor() {
+		return color;
+	}
+
+	public void setColor(String color) {
+		this.color = color;
+	}
+
+	public void sayMeow() {
+		System.out.println(name + ": I am meowing");
+	}
+
+	private long getSleep() { // Считывает с файла время последнего сна кота
+		long sl = 0;
+		try {
+			Scanner scanner = new Scanner(sleep);
+			sl = Long.parseUnsignedLong(scanner.nextLine());
+			scanner.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		return sl;
+	}
+
+	private void setSleep() { // Записывает в файл время, когда кот засыпает
+		try {
+			PrintWriter writer = new PrintWriter(new BufferedWriter(
+					new FileWriter(sleep)));
+			writer.println(date.getTime());
+			writer.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void theCatSleep() { // Создает файл для хранения информации о сне кота, если такого нет.
+		String sleepName = name + "Sleep.txt";
+		File sleeping = new File(sleepName);
+		if (sleeping.exists()) {
+		} else {
+			try {
+				sleeping.createNewFile();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		sleep = sleeping;
+			try {
+				PrintWriter writer = new PrintWriter(new BufferedWriter(
+						new FileWriter(sleep, true)));
+				writer.print(0);
+				writer.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		
+	}
+
+	private void theCatEat() { // Создает файл для хранения информации о еде кота, если такого еще нет.
+		String fileName = name + "Eat.txt";
+		File eating = new File(fileName);
+		if (eating.exists()) {
+		} else {
+			try {
+				eating.createNewFile();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		file = eating;
+			try {
+				PrintWriter writer = new PrintWriter(new BufferedWriter(
+						new FileWriter(file, true)));
+				writer.print(0);
+				writer.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		
+	}
+
+	public Cat() {
+		theCatEat();
+		theCatSleep();
+	}
+
+	private long getEat() { // Считывает с файла информацию о времени последнего приема пищи котом.
+		long eat = 0;
+		try {
+			Scanner scanner = new Scanner(file);
+			eat = Long.parseUnsignedLong(scanner.nextLine());
+			scanner.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		return eat;
+	}
+
+	private void setEat() { // Записывает в файл приема пищи время последней трапезы.
+		try {
+			PrintWriter writer = new PrintWriter(new BufferedWriter(
+					new FileWriter(file)));
+			writer.println(date.getTime());
+			writer.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void gender() { // Кот говорит свой пол.
+		if (gender == true)
+			System.out.println(name + ": I am man");
+		if (gender == false)
+			System.out.println(name + ": I am women");
+	}
+
+	public void eat() { // Кот будет есть, если с момента последней трапезы прошло более минуты.
+		theCatEat();
+		if (getEat() + 60000 < date.getTime()) {
+			System.out.println(name + ": I am eating");
+			setEat();
+		} else {
+			System.out.println(name + ": I do not wont to eat");
+		}
+	}
+
+	public void sleep() { // Кот будет спать, если с момента последнего сна прошло более минуты.
+		theCatSleep();
+		if (getSleep() + 60000 < date.getTime()) {
+			System.out.println(name +": I am sleeping");
+			setSleep();
+		} else {
+			System.out.println(name + ": I do not want to sleep");
+		}
+	}
+
+	public void family(Cat cat1, Cat cat2) { // Если коты старше года, имеют разный пол и разницу в возрасте
+		if (cat1.age > 1 && cat2.age > 1 && cat1.gender != cat2.gender) // менее 10 лет - они полюбят друг друга.
+			System.out.println("These cats love each other"); // если они оба младше года, или оба старше года - будут дружить.
+		if (cat1.age < 1 // если один младше года а другой старше - будут игнорировать друг друга.
+				&& cat2.age < 1
+				|| Math.max(cat1.age, cat2.age) - Math.min(cat1.age, cat2.age) < 10)
+			System.out.println("These cats are friends");
+		if (cat1.age < 1 && cat2.age < 1 || cat1.age > 1 && cat2.age < 1)
+			System.out
+					.println("These cats of different olds. They are not interesting for each other");
+	}
+
+	public void playGame() { // кот будет играть, если он ел и спал менее 30 секунд назад.
+		if (getSleep() + 30000 > date.getTime()
+				&& getEat() + 30000 > date.getTime()) {
+			System.out.println(name + ": I play");
+		}
+		if (getSleep() + 30000 < date.getTime())
+			System.out.println(name + ": I going to play after sleep");
+		if (getEat() + 30000 < date.getTime())
+			System.out.println(name + ": I going to play after eat");
+	}
+
+	public String toString() {
+		return "Cat [date=" + date + ", name=" + name + ", age=" + age
+				+ ", weight=" + weight + ", gender=" + gender + ", color="
+				+ color + ", eatSize=" + eatSize + ", sleepSize=" + sleepSize
+				+ "]";
+	}
+
+}
